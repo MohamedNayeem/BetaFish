@@ -1,20 +1,15 @@
-# Chess, a UCI chess playing engine derived from Glaurung 2.1
-# Copyright (C) 2004-2008 Tord Romstad (Glaurung author)
-# Copyright (C) 2008-2015 Marco Costalba, Joona Kiiski, Tord Romstad
-# Copyright (C) 2015-2016 Marco Costalba, Joona Kiiski, Gary Linscott, Tord Romstad
-#
-# Chess is free software: you can redistribute it and/or modify
+# BETAFISH - A UCI chess engine. Copyright (C) 2013-2015 Mohamed Nayeem
+# BETAFISH is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-#
-# Chess is distributed in the hope that it will be useful,
+# BETAFISH is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-#
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with BETAFISH. If not, see <http://www.gnu.org/licenses/>.
+
 
 
 ### ==========================================================================
@@ -25,7 +20,7 @@
 UNAME = $(shell uname)
 
 ### Executable name
-EXE = stockfish
+EXE = betafish
 
 ### Installation dir definitions
 PREFIX = /usr/local
@@ -70,6 +65,16 @@ pext = no
 
 ### 2.2 Architecture specific
 
+ifeq ($(ARCH),x86-64-avx)
+	arch = x86_64
+	bits = 64
+	prefetch = yes
+	bsfq = yes
+	popcnt = yes
+	sse = yes
+	avx = yes
+endif
+	
 ifeq ($(ARCH),general-32)
 	arch = any
 endif
