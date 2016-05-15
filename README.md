@@ -1,2 +1,1 @@
-# BetaFish
-Betafish Chess Engine 
+# Nayeem
