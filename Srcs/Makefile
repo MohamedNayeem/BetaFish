@@ -1,13 +1,14 @@
-# Nayeem , a UCI chess playing engine derived from Stockfish
+# Chess, a UCI chess playing engine derived from Glaurung 2.1
 # Copyright (C) 2004-2008 Tord Romstad (Glaurung author)
-# 
+# Copyright (C) 2008-2015 Marco Costalba, Joona Kiiski, Tord Romstad
+# Copyright (C) 2015-2016 Marco Costalba, Joona Kiiski, Gary Linscott, Tord Romstad
 #
-# Nayeem  is free software: you can redistribute it and/or modify
+# Chess is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# Nayeem  is distributed in the hope that it will be useful,
+# Chess is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
@@ -24,7 +25,7 @@
 UNAME = $(shell uname)
 
 ### Executable name
-EXE = Nayeem 
+EXE = stockfish
 
 ### Installation dir definitions
 PREFIX = /usr/local
@@ -34,8 +35,8 @@ BINDIR = $(PREFIX)/bin
 PGOBENCH = ./$(EXE) bench 16 1 1000 default time
 
 ### Object files
-OBJS = benchmark.o bitbase.o bitboard.o book.o endgame.o evaluate.o main.o \
-	material.o misc.o movegen.o movepick.o opt.o pawns.o position.o psqt.o \
+OBJS = benchmark.o bitbase.o bitboard.o endgame.o evaluate.o main.o \
+	material.o misc.o movegen.o movepick.o pawns.o position.o psqt.o \
 	search.o thread.o timeman.o tt.o uci.o ucioption.o syzygy/tbprobe.o
 
 ### ==========================================================================
@@ -68,16 +69,6 @@ sse = no
 pext = no
 
 ### 2.2 Architecture specific
-
-ifeq ($(ARCH),x86-64-avx)
-	arch = x86_64
-	bits = 64
-	prefetch = yes
-	bsfq = yes
-	popcnt = yes
-	sse = yes
-	avx = yes
-endif
 
 ifeq ($(ARCH),general-32)
 	arch = any
@@ -359,7 +350,7 @@ endif
 
 help:
 	@echo ""
-	@echo "To compile Nayeem , type: "
+	@echo "To compile stockfish, type: "
 	@echo ""
 	@echo "make target ARCH=arch [COMP=compiler] [COMPCXX=cxx]"
 	@echo ""

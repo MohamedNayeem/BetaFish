@@ -1,19 +1,15 @@
 /*
-  Nayeem , a UCI chess playing engine derived from Stockfish
-  
-
-  Nayeem  is free software: you can redistribute it and/or modify
+  BETAFISH - A UCI chess engine. Copyright (C) 2013-2015 Mohamed Nayeem
+  BETAFISH is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
-
-  Nayeem  is distributed in the hope that it will be useful,
+  BETAFISH is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
-
   You should have received a copy of the GNU General Public License
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  along with BETAFISH. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <algorithm>
@@ -64,7 +60,7 @@ namespace {
     double ratio1 = (TMaxRatio * moveImportance) / (TMaxRatio * moveImportance + otherMovesImportance);
     double ratio2 = (moveImportance + TStealRatio * otherMovesImportance) / (moveImportance + otherMovesImportance);
 
-    return int(myTime * std::min(ratio1, ratio2)); // Intel C++ asks an explicit cast
+    return int(myTime * std::min(ratio1, ratio2)); // Intel C++ asks for an explicit cast
   }
 
 } // namespace
@@ -89,7 +85,7 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply)
   // If we have to play in 'nodes as time' mode, then convert from time
   // to nodes, and use resulting values in time management formulas.
   // WARNING: Given npms (nodes per millisecond) must be much lower then
-  // real engine speed to avoid time losses.
+  // the real engine speed to avoid time losses.
   if (npmsec)
   {
       if (!availableNodes) // Only once at game start
@@ -100,10 +96,10 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply)
       limits.inc[us] *= npmsec;
       limits.npmsec = npmsec;
   }
-  
+
   startTime = limits.startTime;
   optimumTime = maximumTime = std::max(limits.time[us], minThinkingTime);
-  
+
   const int MaxMTG = limits.movestogo ? std::min(limits.movestogo, MoveHorizon) : MoveHorizon;
 
   // We calculate optimum time usage for different hypothetical "moves to go"-values
@@ -113,7 +109,7 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply)
   {
       // Calculate thinking time for hypothetical "moves to go"-value
       int hypMyTime =  limits.time[us]
-                     + limits.inc[us] * (hypMTG - 1) 
+                     + limits.inc[us] * (hypMTG - 1)
                      - moveOverhead * (2 + std::min(hypMTG, 40));
 
       hypMyTime = std::max(hypMyTime, 0);
@@ -127,6 +123,4 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply)
 
   if (Options["Ponder"])
       optimumTime += optimumTime / 4;
-
-  optimumTime = std::min(optimumTime, maximumTime);
 }

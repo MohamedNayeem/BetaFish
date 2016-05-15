@@ -1,19 +1,15 @@
 /*
-  Nayeem , a UCI chess playing engine derived from Stockfish
-  
-
-  Nayeem  is free software: you can redistribute it and/or modify
+  BETAFISH - A UCI chess engine. Copyright (C) 2013-2015 Mohamed Nayeem
+  BETAFISH is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
-
-  Nayeem  is distributed in the hope that it will be useful,
+  BETAFISH is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
-
   You should have received a copy of the GNU General Public License
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  along with BETAFISH. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <algorithm>
@@ -29,9 +25,6 @@
 #include "thread.h"
 #include "tt.h"
 #include "uci.h"
-
-#define MEMALIGN(a, b, c) a = _aligned_malloc (c, b) 
-#define ALIGNED_FREE(x) _aligned_free (x) // BRICE
 
 using std::string;
 
@@ -55,7 +48,7 @@ const string PieceToChar(" PNBRQK  pnbrqk");
 // from the bitboards and scan for new X-ray attacks behind it.
 
 template<int Pt>
-PieceType min_attacker(const Bitboard* bb, const Square& to, const Bitboard& stmAttackers,
+PieceType min_attacker(const Bitboard* bb, Square to, Bitboard stmAttackers,
                        Bitboard& occupied, Bitboard& attackers) {
 
   Bitboard b = stmAttackers & bb[Pt];
@@ -75,7 +68,7 @@ PieceType min_attacker(const Bitboard* bb, const Square& to, const Bitboard& stm
 }
 
 template<>
-PieceType min_attacker<KING>(const Bitboard*, const Square&, const Bitboard&, Bitboard&, Bitboard&) {
+PieceType min_attacker<KING>(const Bitboard*, Square, Bitboard, Bitboard&, Bitboard&) {
   return KING; // No need to update bitboards: it is the last cycle
 }
 
@@ -204,7 +197,7 @@ Position& Position::set(const string& fenStr, bool isChess960, StateInfo* si, Th
   std::memset(si, 0, sizeof(StateInfo));
   std::fill_n(&pieceList[0][0][0], sizeof(pieceList) / sizeof(Square), SQ_NONE);
   st = si;
-  
+
   ss >> std::noskipws;
 
   // 1. Piece placement
@@ -266,7 +259,7 @@ Position& Position::set(const string& fenStr, bool isChess960, StateInfo* si, Th
           st->epSquare = SQ_NONE;
   }
   else
-	  st->epSquare = SQ_NONE;
+      st->epSquare = SQ_NONE;
 
   // 5-6. Halfmove clock and fullmove number
   ss >> std::skipws >> st->rule50 >> gamePly;
@@ -280,7 +273,7 @@ Position& Position::set(const string& fenStr, bool isChess960, StateInfo* si, Th
   set_state(st);
 
   assert(pos_is_ok());
-  
+
   return *this;
 }
 
@@ -406,7 +399,6 @@ const string Position::fen() const {
 
   return ss.str();
 }
-
 
 
 /// Position::game_phase() calculates the game phase interpolating total non-pawn
@@ -1113,13 +1105,11 @@ bool Position::pos_is_ok(int* failedStep) const {
                   && relative_rank(sideToMove, ep_square()) != RANK_6))
               return false;
 
-
       if (step == King)
           if (   std::count(board, board + SQUARE_NB, W_KING) != 1
               || std::count(board, board + SQUARE_NB, B_KING) != 1
               || attackers_to(square<KING>(~sideToMove)) & pieces(sideToMove))
               return false;
-
 
       if (step == Bitboards)
       {

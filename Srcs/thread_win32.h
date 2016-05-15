@@ -1,19 +1,15 @@
 /*
-  Nayeem , a UCI chess playing engine derived from Stockfish
-  
-
-  Nayeem  is free software: you can redistribute it and/or modify
+  BETAFISH - A UCI chess engine. Copyright (C) 2013-2015 Mohamed Nayeem
+  BETAFISH is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
-
-  Nayeem  is distributed in the hope that it will be useful,
+  BETAFISH is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
-
   You should have received a copy of the GNU General Public License
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  along with BETAFISH. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #ifndef THREAD_WIN32_H_INCLUDED
@@ -23,11 +19,11 @@
 /// relies on libwinpthread. Currently libwinpthread implements mutexes directly
 /// on top of Windows semaphores. Semaphores, being kernel objects, require kernel
 /// mode transition in order to lock or unlock, which is very slow compared to
-/// interlocked operations (about 30% slower on bench test). To workaround this
+/// interlocked operations (about 30% slower on bench test). To work around this
 /// issue, we define our wrappers to the low level Win32 calls. We use critical
 /// sections to support Windows XP and older versions. Unfortunately, cond_wait()
 /// is racy between unlock() and WaitForSingleObject() but they have the same
-/// speed performance of SRW locks.
+/// speed performance as the SRW locks.
 
 #include <condition_variable>
 #include <mutex>
@@ -57,6 +53,7 @@ private:
 };
 
 typedef std::condition_variable_any ConditionVariable;
+
 #else // Default case: use STL classes
 
 typedef std::mutex Mutex;

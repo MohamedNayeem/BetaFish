@@ -1,19 +1,15 @@
 /*
-  Nayeem , a UCI chess playing engine derived from Stockfish
-  Copyright (C) 2008-2015 Marco Costalba, Joona Kiiski, Tord Romstad
-
-  Nayeem  is free software: you can redistribute it and/or modify
+  BETAFISH - A UCI chess engine. Copyright (C) 2013-2015 Mohamed Nayeem
+  BETAFISH is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
-
-  Nayeem  is distributed in the hope that it will be useful,
+  BETAFISH is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
-
   You should have received a copy of the GNU General Public License
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  along with BETAFISH. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <algorithm> // For std::count
@@ -26,7 +22,7 @@
 
 ThreadPool Threads; // Global object
 
-/// Thread constructor launch the thread and then wait until it goes to sleep
+/// Thread constructor launches the thread and then waits until it goes to sleep
 /// in idle_loop().
 
 Thread::Thread() {
@@ -44,7 +40,7 @@ Thread::Thread() {
 }
 
 
-/// Thread destructor wait for thread termination before returning
+/// Thread destructor waits for thread termination before returning
 
 Thread::~Thread() {
 
@@ -56,7 +52,8 @@ Thread::~Thread() {
 }
 
 
-/// Thread::wait_for_search_finished() wait on sleep condition until not searching
+/// Thread::wait_for_search_finished() waits on sleep condition
+/// until not searching
 
 void Thread::wait_for_search_finished() {
 
@@ -65,7 +62,7 @@ void Thread::wait_for_search_finished() {
 }
 
 
-/// Thread::wait() wait on sleep condition until condition is true
+/// Thread::wait() waits on sleep condition until condition is true
 
 void Thread::wait(std::atomic_bool& condition) {
 
@@ -74,7 +71,7 @@ void Thread::wait(std::atomic_bool& condition) {
 }
 
 
-/// Thread::start_searching() wake up the thread that will start the search
+/// Thread::start_searching() wakes up the thread that will start the search
 
 void Thread::start_searching(bool resume) {
 
@@ -111,7 +108,7 @@ void Thread::idle_loop() {
 }
 
 
-/// ThreadPool::init() create and launch requested threads, that will go
+/// ThreadPool::init() creates and launches requested threads that will go
 /// immediately to sleep. We cannot use a constructor because Threads is a
 /// static object and we need a fully initialized engine at this point due to
 /// allocation of Endgames in the Thread constructor.
@@ -123,9 +120,9 @@ void ThreadPool::init() {
 }
 
 
-/// ThreadPool::exit() terminate threads before the program exits. Cannot be
+/// ThreadPool::exit() terminates threads before the program exits. Cannot be
 /// done in destructor because threads must be terminated before deleting any
-/// static objects, so while still in main().
+/// static objects while still in main().
 
 void ThreadPool::exit() {
 
@@ -152,7 +149,7 @@ void ThreadPool::read_uci_options() {
 }
 
 
-/// ThreadPool::nodes_searched() return the number of nodes searched
+/// ThreadPool::nodes_searched() returns the number of nodes searched
 
 int64_t ThreadPool::nodes_searched() {
 
@@ -163,8 +160,8 @@ int64_t ThreadPool::nodes_searched() {
 }
 
 
-/// ThreadPool::start_thinking() wake up the main thread sleeping in idle_loop()
-/// and start a new search, then return immediately.
+/// ThreadPool::start_thinking() wakes up the main thread sleeping in idle_loop()
+/// and starts a new search, then returns immediately.
 
 void ThreadPool::start_thinking(const Position& pos, StateListPtr& states,
                                 const Search::LimitsType& limits) {

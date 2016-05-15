@@ -1,19 +1,15 @@
 /*
-  Nayeem , a UCI chess playing engine derived from Stockfish
-  
-
-  Nayeem  is free software: you can redistribute it and/or modify
+  BETAFISH - A UCI chess engine. Copyright (C) 2013-2015 Mohamed Nayeem
+  BETAFISH is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
-
-  Nayeem  is distributed in the hope that it will be useful,
+  BETAFISH is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
-
   You should have received a copy of the GNU General Public License
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  along with BETAFISH. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #ifndef TT_H_INCLUDED
@@ -78,8 +74,7 @@ private:
 /// divide the size of a cache line size, to ensure that clusters never cross
 /// cache lines. This ensures best cache performance, as the cacheline is
 /// prefetched, as soon as possible.
-extern int large_use;
-void FREE_MEM (void *);
+
 class TranspositionTable {
 
   static const int CacheLineSize = 64;
@@ -93,8 +88,7 @@ class TranspositionTable {
   static_assert(CacheLineSize % sizeof(Cluster) == 0, "Cluster size incorrect");
 
 public:
-  void* mem;
- ~TranspositionTable() { large_use ? FREE_MEM (mem) : free(mem); }
+ ~TranspositionTable() { free(mem); }
   void new_search() { generation8 += 4; } // Lower 2 bits are used by Bound
   uint8_t generation() const { return generation8; }
   TTEntry* probe(const Key key, bool& found) const;
@@ -110,6 +104,7 @@ public:
 private:
   size_t clusterCount;
   Cluster* table;
+  void* mem;
   uint8_t generation8; // Size must be not bigger than TTEntry::genBound8
 };
 

@@ -1,19 +1,15 @@
 /*
-  Nayeem , a UCI chess playing engine derived from Stockfish
-  
-
-  Nayeem  is free software: you can redistribute it and/or modify
+  BETAFISH - A UCI chess engine. Copyright (C) 2013-2015 Mohamed Nayeem
+  BETAFISH is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
-
-  Nayeem  is distributed in the hope that it will be useful,
+  BETAFISH is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
-
   You should have received a copy of the GNU General Public License
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  along with BETAFISH. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <cstring>   // For std::memset
@@ -24,8 +20,6 @@
 
 TranspositionTable TT; // Our global transposition table
 
-void CREATE_MEM2(void **,uint64_t);
-void FREE_MEM(void *);
 
 /// TranspositionTable::resize() sets the size of the transposition table,
 /// measured in megabytes. Transposition table consists of a power of 2 number
@@ -40,17 +34,8 @@ void TranspositionTable::resize(size_t mbSize) {
 
   clusterCount = newClusterCount;
 
-  mem = nullptr;
-  FREE_MEM(mem);
-  CREATE_MEM2(&mem, clusterCount * sizeof(Cluster));
-  large_use = true;
-  
-  if (!mem)
-  {
   free(mem);
   mem = calloc(clusterCount * sizeof(Cluster) + CacheLineSize - 1, 1);
-    large_use = false;
-  }
 
   if (!mem)
   {
