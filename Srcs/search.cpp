@@ -1014,6 +1014,9 @@ moves_loop: // When in check search starts from here
           // Decrease/increase reduction for moves with a good/bad history
           int rHist = (hValue + cmhValue + fmValue + fm2Value - 10000) / 20000;
           r = std::max(DEPTH_ZERO, r - rHist * ONE_PLY);
+		  
+		  if (PvNode && extension)
+			  r = std::max(DEPTH_ZERO, r - ONE_PLY);
 
           // Decrease reduction for moves that escape a capture. Filter out
           // castling moves, because they are coded as "king captures rook" and
