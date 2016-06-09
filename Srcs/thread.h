@@ -1,15 +1,19 @@
 /*
-  BETAFISH - A UCI chess engine. Copyright (C) 2013-2015 Mohamed Nayeem
-  BETAFISH is free software: you can redistribute it and/or modify
+  Nayeem , a UCI chess playing engine derived from Stockfish
+  
+
+  Nayeem  is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
-  BETAFISH is distributed in the hope that it will be useful,
+
+  Nayeem  is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
+
   You should have received a copy of the GNU General Public License
-  along with BETAFISH. If not, see <http://www.gnu.org/licenses/>.
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #ifndef THREAD_H_INCLUDED
@@ -77,7 +81,6 @@ struct MainThread : public Thread {
   Value previousScore;
 };
 
-
 /// ThreadPool struct handles all the threads-related stuff like init, starting,
 /// parking and, most importantly, launching a thread. All the access to threads
 /// data is done through this class.
@@ -91,7 +94,7 @@ struct ThreadPool : public std::vector<Thread*> {
   void start_thinking(const Position&, StateListPtr&, const Search::LimitsType&);
   void read_uci_options();
   int64_t nodes_searched();
-
+  
 private:
   StateListPtr setupStates;
 };

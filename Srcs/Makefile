@@ -1,15 +1,19 @@
-# BETAFISH - A UCI chess engine. Copyright (C) 2013-2015 Mohamed Nayeem
-# BETAFISH is free software: you can redistribute it and/or modify
+# Nayeem , a UCI chess playing engine derived from Stockfish
+# Copyright (C) 2004-2008 Tord Romstad (Glaurung author)
+# 
+#
+# Nayeem  is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# BETAFISH is distributed in the hope that it will be useful,
+#
+# Nayeem  is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
+#
 # You should have received a copy of the GNU General Public License
-# along with BETAFISH. If not, see <http://www.gnu.org/licenses/>.
-
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 ### ==========================================================================
@@ -20,7 +24,7 @@
 UNAME = $(shell uname)
 
 ### Executable name
-EXE = betafish
+EXE = Nayeem 
 
 ### Installation dir definitions
 PREFIX = /usr/local
@@ -30,8 +34,8 @@ BINDIR = $(PREFIX)/bin
 PGOBENCH = ./$(EXE) bench 16 1 1000 default time
 
 ### Object files
-OBJS = benchmark.o bitbase.o bitboard.o endgame.o evaluate.o main.o \
-	material.o misc.o movegen.o movepick.o pawns.o position.o psqt.o \
+OBJS = benchmark.o bitbase.o bitboard.o book.o endgame.o evaluate.o main.o \
+	material.o misc.o movegen.o movepick.o opt.o pawns.o position.o psqt.o \
 	search.o thread.o timeman.o tt.o uci.o ucioption.o syzygy/tbprobe.o
 
 ### ==========================================================================
@@ -74,7 +78,7 @@ ifeq ($(ARCH),x86-64-avx)
 	sse = yes
 	avx = yes
 endif
-	
+
 ifeq ($(ARCH),general-32)
 	arch = any
 endif
@@ -355,7 +359,7 @@ endif
 
 help:
 	@echo ""
-	@echo "To compile stockfish, type: "
+	@echo "To compile Nayeem , type: "
 	@echo ""
 	@echo "make target ARCH=arch [COMP=compiler] [COMPCXX=cxx]"
 	@echo ""

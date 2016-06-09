@@ -1,15 +1,19 @@
 /*
-  BETAFISH - A UCI chess engine. Copyright (C) 2013-2015 Mohamed Nayeem
-  BETAFISH is free software: you can redistribute it and/or modify
+  Nayeem , a UCI chess playing engine derived from Stockfish
+  
+
+  Nayeem  is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
-  BETAFISH is distributed in the hope that it will be useful,
+
+  Nayeem  is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
+
   You should have received a copy of the GNU General Public License
-  along with BETAFISH. If not, see <http://www.gnu.org/licenses/>.
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <algorithm>
@@ -25,6 +29,9 @@
 #include "thread.h"
 #include "tt.h"
 #include "uci.h"
+
+#define MEMALIGN(a, b, c) a = _aligned_malloc (c, b) 
+#define ALIGNED_FREE(x) _aligned_free (x) // BRICE
 
 using std::string;
 
@@ -48,7 +55,7 @@ const string PieceToChar(" PNBRQK  pnbrqk");
 // from the bitboards and scan for new X-ray attacks behind it.
 
 template<int Pt>
-PieceType min_attacker(const Bitboard* bb, Square to, Bitboard stmAttackers,
+PieceType min_attacker(const Bitboard* bb, const Square& to, const Bitboard& stmAttackers,
                        Bitboard& occupied, Bitboard& attackers) {
 
   Bitboard b = stmAttackers & bb[Pt];
@@ -68,7 +75,7 @@ PieceType min_attacker(const Bitboard* bb, Square to, Bitboard stmAttackers,
 }
 
 template<>
-PieceType min_attacker<KING>(const Bitboard*, Square, Bitboard, Bitboard&, Bitboard&) {
+PieceType min_attacker<KING>(const Bitboard*, const Square&, const Bitboard&, Bitboard&, Bitboard&) {
   return KING; // No need to update bitboards: it is the last cycle
 }
 
@@ -197,7 +204,7 @@ Position& Position::set(const string& fenStr, bool isChess960, StateInfo* si, Th
   std::memset(si, 0, sizeof(StateInfo));
   std::fill_n(&pieceList[0][0][0], sizeof(pieceList) / sizeof(Square), SQ_NONE);
   st = si;
-
+  
   ss >> std::noskipws;
 
   // 1. Piece placement
@@ -259,7 +266,7 @@ Position& Position::set(const string& fenStr, bool isChess960, StateInfo* si, Th
           st->epSquare = SQ_NONE;
   }
   else
-      st->epSquare = SQ_NONE;
+	  st->epSquare = SQ_NONE;
 
   // 5-6. Halfmove clock and fullmove number
   ss >> std::skipws >> st->rule50 >> gamePly;
@@ -273,7 +280,7 @@ Position& Position::set(const string& fenStr, bool isChess960, StateInfo* si, Th
   set_state(st);
 
   assert(pos_is_ok());
-
+  
   return *this;
 }
 
@@ -401,6 +408,7 @@ const string Position::fen() const {
 }
 
 
+
 /// Position::game_phase() calculates the game phase interpolating total non-pawn
 /// material between endgame and midgame limits.
 
@@ -414,34 +422,29 @@ Phase Position::game_phase() const {
 }
 
 
-/// Position::slider_blockers() returns a bitboard of all the pieces with color
-/// 'c1' that are blocking sliders attacks on the square 's' of color 'c2'. A piece
-/// blocks a slider if removing that piece from the board would result in a position
-/// where square 's' is attacked. For example, a king attack blocking piece can be either 
-/// a pinned or a discovered check piece, according if its color 'c1' is the same or
-/// the opposite of 'c2'.
+/// Position::slider_blockers() returns a bitboard of all the pieces in 'target' that
+/// are blocking attacks on the square 's' from 'sliders'. A piece blocks a slider
+/// if removing that piece from the board would result in a position where square 's'
+/// is attacked. For example, a king-attack blocking piece can be either a pinned or
+/// a discovered check piece, according if its color is the opposite or the same of
+/// the color of the slider.
 
-Bitboard Position::slider_blockers(Color c1, Square s, Color c2, bool WithQueens) const {
+Bitboard Position::slider_blockers(Bitboard target, Bitboard sliders, Square s) const {
 
-  Bitboard b, pinners, result = 0, p = pieces();
+  Bitboard b, pinners, result = 0;
 
-  // Pinners are sliders that attack s when a pinned piece is removed
-  pinners = pieces(~c2);
-  if (WithQueens)
-      pinners &=  (PseudoAttacks[ROOK  ][s] & pieces(QUEEN, ROOK))
-                | (PseudoAttacks[BISHOP][s] & pieces(QUEEN, BISHOP));
-  else
-      pinners &=  (PseudoAttacks[ROOK  ][s] & pieces(ROOK))
-                | (PseudoAttacks[BISHOP][s] & pieces(BISHOP));
+  // Pinners are sliders that attack 's' when a pinned piece is removed
+  pinners = (  (PseudoAttacks[ROOK  ][s] & pieces(QUEEN, ROOK))
+             | (PseudoAttacks[BISHOP][s] & pieces(QUEEN, BISHOP))) & sliders;
 
   while (pinners)
   {
-      b = between_bb(s, pop_lsb(&pinners)) & p;
+      b = between_bb(s, pop_lsb(&pinners)) & pieces();
 
       if (!more_than_one(b))
-          result |= b;
+          result |= b & target;
   }
-  return result & pieces(c1);
+  return result;
 }
 
 
@@ -1109,11 +1112,13 @@ bool Position::pos_is_ok(int* failedStep) const {
                   && relative_rank(sideToMove, ep_square()) != RANK_6))
               return false;
 
+
       if (step == King)
           if (   std::count(board, board + SQUARE_NB, W_KING) != 1
               || std::count(board, board + SQUARE_NB, B_KING) != 1
               || attackers_to(square<KING>(~sideToMove)) & pieces(sideToMove))
               return false;
+
 
       if (step == Bitboards)
       {

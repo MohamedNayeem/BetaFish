@@ -1,15 +1,19 @@
 /*
-  BETAFISH - A UCI chess engine. Copyright (C) 2013-2015 Mohamed Nayeem
-  BETAFISH is free software: you can redistribute it and/or modify
+  Nayeem , a UCI chess playing engine derived from Stockfish
+  
+
+  Nayeem  is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
-  BETAFISH is distributed in the hope that it will be useful,
+
+  Nayeem  is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
+
   You should have received a copy of the GNU General Public License
-  along with BETAFISH. If not, see <http://www.gnu.org/licenses/>.
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <cassert>
@@ -62,10 +66,10 @@ namespace {
 /// ordering is at the current node.
 
 MovePicker::MovePicker(const Position& p, Move ttm, Depth d, Search::Stack* s)
-           : pos(p), ss(s), depth(d) {
+            : pos(p), ss(s), depth(d) {
 
   assert(d > DEPTH_ZERO);
-
+  
   Square prevSq = to_sq((ss-1)->currentMove);
   countermove = pos.this_thread()->counterMoves[pos.piece_on(prevSq)][prevSq];
 
@@ -134,18 +138,18 @@ void MovePicker::score<CAPTURES>() {
 
 template<>
 void MovePicker::score<QUIETS>() {
-
+	
   const HistoryStats& history = pos.this_thread()->history;
-
+  
   const CounterMoveStats* cm = (ss-1)->counterMoves;
   const CounterMoveStats* fm = (ss-2)->counterMoves;
   const CounterMoveStats* f2 = (ss-4)->counterMoves;
 
   for (auto& m : *this)
-      m.value =          history[pos.moved_piece(m)][to_sq(m)]
-               + (cm ? 3 * (*cm)[pos.moved_piece(m)][to_sq(m)] : VALUE_ZERO)
-               + (fm ? 2 * (*fm)[pos.moved_piece(m)][to_sq(m)] : VALUE_ZERO)
-               + (f2 ?     (*f2)[pos.moved_piece(m)][to_sq(m)] : VALUE_ZERO);
+      m.value =      history[pos.moved_piece(m)][to_sq(m)]
+               + (cm ? (*cm)[pos.moved_piece(m)][to_sq(m)] : VALUE_ZERO)
+			   + (fm ? (*fm)[pos.moved_piece(m)][to_sq(m)] : VALUE_ZERO)
+			   + (f2 ? (*f2)[pos.moved_piece(m)][to_sq(m)] : VALUE_ZERO);
 }
 
 template<>
@@ -197,11 +201,11 @@ void MovePicker::generate_next_stage() {
       endMoves = generate<QUIETS>(pos, moves);
       score<QUIETS>();
       if (depth < 3 * ONE_PLY)
-      {
-          ExtMove* goodQuiet = std::partition(cur, endMoves, [](const ExtMove& m)
-                                             { return m.value > VALUE_ZERO; });
+	  {
+		  ExtMove* goodQuiet = std::partition(cur, endMoves, [](const ExtMove& m)
+		                                     { return m.value > VALUE_ZERO; });
           insertion_sort(cur, goodQuiet);
-      } else
+	  } else
           insertion_sort(cur, endMoves);
       break;
 

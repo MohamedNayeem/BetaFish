@@ -1,15 +1,19 @@
 /*
-  BETAFISH - A UCI chess engine. Copyright (C) 2013-2015 Mohamed Nayeem
-  BETAFISH is free software: you can redistribute it and/or modify
+  Nayeem , a UCI chess playing engine derived from Stockfish
+  
+
+  Nayeem  is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
-  BETAFISH is distributed in the hope that it will be useful,
+
+  Nayeem  is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
+
   You should have received a copy of the GNU General Public License
-  along with BETAFISH. If not, see <http://www.gnu.org/licenses/>.
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <cassert>
@@ -53,11 +57,10 @@ namespace {
 
     if (Checks && !pos.gives_check(m, *ci))
         return moveList;
-    else
-        (void)ci; // Silence a warning under MSVC
 
     *moveList++ = m;
-    return moveList;
+
+    return (void)ci, moveList; // Silence a warning under MSVC
   }
 
 
@@ -78,10 +81,8 @@ namespace {
     // that's not already included in the queen promotion.
     if (Type == QUIET_CHECKS && (StepAttacksBB[W_KNIGHT][to] & ci->ksq))
         *moveList++ = make<PROMOTION>(to - Delta, to, KNIGHT);
-    else
-        (void)ci; // Silence a warning under MSVC
 
-    return moveList;
+    return (void)ci, moveList; // Silence a warning under MSVC
   }
 
 

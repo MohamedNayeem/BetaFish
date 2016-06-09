@@ -1,15 +1,19 @@
 /*
-  BETAFISH - A UCI chess engine. Copyright (C) 2013-2015 Mohamed Nayeem
-  BETAFISH is free software: you can redistribute it and/or modify
+  Nayeem , a UCI chess playing engine derived from Stockfish
+  
+
+  Nayeem  is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
-  BETAFISH is distributed in the hope that it will be useful,
+
+  Nayeem  is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
+
   You should have received a copy of the GNU General Public License
-  along with BETAFISH. If not, see <http://www.gnu.org/licenses/>.
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #ifndef POSITION_H_INCLUDED
@@ -125,6 +129,7 @@ public:
   Bitboard attacks_from(Piece pc, Square s) const;
   template<PieceType> Bitboard attacks_from(Square s) const;
   template<PieceType> Bitboard attacks_from(Square s, Color c) const;
+  Bitboard slider_blockers(Bitboard target, Bitboard sliders, Square s) const;
 
   // Properties of moves
   bool legal(Move m, Bitboard pinned) const;
@@ -139,7 +144,6 @@ public:
   // Piece specific
   bool pawn_passed(Color c, Square s) const;
   bool opposite_bishops() const;
-  Bitboard queen_pins(Color c) const;
 
   // Doing and undoing moves
   void do_move(Move m, StateInfo& st, bool givesCheck);
@@ -181,7 +185,6 @@ private:
   void set_state(StateInfo* si) const;
 
   // Other helpers
-  Bitboard slider_blockers(Color c1, Square s, Color c2, bool WithQueens = true) const;
   void put_piece(Color c, PieceType pt, Square s);
   void remove_piece(Color c, PieceType pt, Square s);
   void move_piece(Color c, PieceType pt, Square from, Square to);
@@ -306,15 +309,11 @@ inline Bitboard Position::checkers() const {
 }
 
 inline Bitboard Position::discovered_check_candidates() const {
-  return slider_blockers(sideToMove, square<KING>(~sideToMove), ~sideToMove);
+  return slider_blockers(pieces(sideToMove), pieces(sideToMove), square<KING>(~sideToMove));
 }
 
 inline Bitboard Position::pinned_pieces(Color c) const {
-  return slider_blockers(c, square<KING>(c), c);
-}
-
-inline Bitboard Position::queen_pins(Color c) const {
-  return pieceCount[c][QUEEN] > 0 ? slider_blockers(c, pieceList[c][QUEEN][0], c, false) : 0;
+  return slider_blockers(pieces(c), pieces(~c), square<KING>(c));
 }
 
 inline bool Position::pawn_passed(Color c, Square s) const {
